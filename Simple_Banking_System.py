@@ -1,3 +1,4 @@
+import math
 import random
 
 credit_cards = {}
@@ -19,13 +20,35 @@ def menu_account():
     choose = input()
     return choose
 
+def luhn(num):
+    # multiply odd digits by 2
+    i = 0
+    number = []
+    sum_number = 0
+    for char in num:
+        char = int(char)
+        if i % 2 == 0:
+            char = char * 2
+        number.append(char)
+        i += 1
+    i = 0
+    for char in number:
+        if char > 9:
+            char = char - 9
+        number[i] = char
+        i += 1
+    for char in number:
+        sum_number += char
+    check_sum = int(round((math.ceil(sum_number / 10) - sum_number / 10), 1) * 10)
+    return check_sum
 
 def create_account():
     print("Your card has been created")
     # Credit number
     print("Your card number:")
-    user_num = random.randint(000000000, 999999999)
-    check_sum = 3
+    user_num = random.randint(99999999, 999999999)
+    credit_card_num = "400000" + str(user_num)
+    check_sum = luhn(credit_card_num)
     credit_card_num = "400000" + str(user_num) + str(check_sum)
     print(credit_card_num)
 
@@ -60,7 +83,7 @@ def log_into():
                     break
                 elif choose == "0":
                     print("Bye!")
-                    exit
+                    exit()
         else:
             print("Wrong card number or PIN!")
     else:
