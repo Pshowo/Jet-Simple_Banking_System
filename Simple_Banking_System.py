@@ -1,8 +1,19 @@
 import math
 import random
+import sqlite3
+import os
+
 
 credit_cards = {}
-
+def create_table(cur):
+    cur.execute(""""
+        CREATE TABLE IF NOT EXISTS card (
+            id INTEGER,
+            number TEXT,
+            pin TEXT,
+            balance INTEGER DEFAULT 0
+        );""")
+    cur.commit()
 
 # print menu
 def menu():
@@ -62,6 +73,25 @@ def create_account():
     credit_cards[credit_card_num]["PIN"] = pin_card
     credit_cards[credit_card_num]["Balance"] = 0
 
+    # Add card to database
+    add_card_to_db(credit_card_num, pin_card)
+
+
+def add_card_to_db(card_num, PIN):
+    global id_card
+    # Add to database
+    conn = sqlite3.connect("card.s3db")
+    cur = conn.cursor()
+    sql_add_card = """
+    INSERT INTO card (id, number, pin, balance) VALUES ({}, {}, {}, {})
+    """.format(id_card, card_num, PIN, 0)
+    cur.execute(sql_add_card)
+    conn.commit()
+    id_card += 1
+    print("Add card to db")
+
+
+
 
 def log_into():
     global credit_cards
@@ -88,6 +118,22 @@ def log_into():
             print("Wrong card number or PIN!")
     else:
         print("Wrong card number or PIN!")
+
+# ============
+
+
+id_card = 0
+conn = sqlite3.connect("card.s3db")
+cur = conn.cursor()
+sql_create_table = """
+        CREATE TABLE IF NOT EXISTS card (
+            id INTEGER,
+            number TEXT,
+            pin TEXT,
+            balance INTEGER
+        );"""
+cur.execute(sql_create_table)
+conn.commit()
 
 
 while True:
